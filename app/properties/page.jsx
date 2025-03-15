@@ -3,7 +3,6 @@ import PropertySearchForm from "@/components/PropertySearchForm";
 import properties from "@/properties.json";
 
 const PropertiesPage = async () => {
-  console.log(properties);
   return (
     <>
       <section className="bg-blue-700 py-4">
