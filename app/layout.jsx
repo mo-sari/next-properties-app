@@ -1,6 +1,7 @@
 import "@/assets/styles/globals.css";
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
+import { Inconsolata } from "next/font/google";
 
 export const metadata = {
   title: "Property Pulse",
@@ -8,10 +9,12 @@ export const metadata = {
   description: "Find the perfect rental property",
 };
 
+const inconsolata = Inconsolata({ subsets: ["latin"] });
+
 const MainLayout = ({ children }) => {
   return (
     <html>
-      <body>
+      <body className={inconsolata.className}>
         <Navbar />
         <main>{children}</main>
         <Footer />
