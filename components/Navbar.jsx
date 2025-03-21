@@ -1,22 +1,35 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Image from "next/image";
 import logo from "@/assets/images/logo-white.png";
 import profile from "@/assets/images/profile.png";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { FaGoogle } from "react-icons/fa";
+import { useUserContext } from "@/app/contexts/AuthContext";
+import { useRouter } from "next/navigation";
+import axios from "axios";
 
 const Navbar = () => {
+  const router = useRouter();
+  const { user, setUser } = useUserContext();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  // TODO....should close the mobile navbar in desktop width no matter what is the state
+  const logout = async () => {
+    console.log("logout function was called");
+    try {
+      await axios.get("/api/users/logout");
+      setUser(null);
+      router.push("/login");
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
 
   const pathName = usePathname();
   return (
-    <nav className="bg-blue-700 border-b border-blue-500">
+    <nav className="bg-blue-700 border-b border-blue-500 shadow-xl">
       <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
         <div className="relative flex h-20 items-center justify-between">
           <div className="absolute inset-y-0 left-0 flex items-center md:hidden">
@@ -63,28 +76,6 @@ const Navbar = () => {
               </span>
             </Link>
             {/* <!-- Desktop Menu Hidden below md screens --> */}
-            {/* <div className="hidden md:ml-6 md:block">
-              <div className="flex space-x-2">
-                <Link
-                  href="/"
-                  className="text-white bg-black hover:bg-gray-900 hover:text-white rounded-md px-3 py-2"
-                >
-                  Home
-                </Link>
-                <Link
-                  href="/properties"
-                  className="text-white hover:bg-gray-900 hover:text-white rounded-md px-3 py-2"
-                >
-                  Properties
-                </Link>
-                <Link
-                  href="/properties/add"
-                  className="text-white hover:bg-gray-900 hover:text-white rounded-md px-3 py-2"
-                >
-                  Add Property
-                </Link>
-              </div>
-            </div> */}
             <div className="hidden md:ml-6 md:block">
               <div className="flex space-x-2">
                 <Link
@@ -103,7 +94,7 @@ const Navbar = () => {
                 >
                   Properties
                 </Link>
-                {isLoggedIn && (
+                {user && (
                   <Link
                     href="/properties/add"
                     className={`text-white hover:bg-gray-900 hover:text-white rounded-md px-3 py-2 ${
@@ -118,20 +109,23 @@ const Navbar = () => {
           </div>
 
           {/* <!-- Right Side Menu (Logged Out) --> */}
-          {!isLoggedIn && (
+          {!user && (
             <div className="hidden md:block md:ml-6">
               <div className="flex items-center">
-                <button className="flex items-center text-white bg-gray-700 hover:bg-gray-900 hover:text-white rounded-md px-3 py-2">
+                <Link
+                  href="/login"
+                  className="flex items-center text-white bg-gray-700 hover:bg-gray-900 hover:text-white rounded-md px-3 py-2"
+                >
                   {/* <i className="fa-brands fa-google text-white mr-2"></i> */}
                   <FaGoogle className="text-white mr-2" />
                   <span>Login or Register</span>
-                </button>
+                </Link>
               </div>
             </div>
           )}
 
           {/* <!-- Right Side Menu (Logged In) --> */}
-          {isLoggedIn && (
+          {user && (
             <div className="absolute inset-y-0 right-0 flex items-center pr-2 md:static md:inset-auto md:ml-6 md:pr-0">
               <Link href="/messages" className="relative group">
                 <button
@@ -211,9 +205,10 @@ const Navbar = () => {
                     </Link>
                     <button
                       className="block px-4 py-2 text-sm text-gray-700"
-                      role="menuitem"
-                      tabIndex="-1"
-                      id="user-menu-item-2"
+                      // role="menuitem"
+                      // tabIndex="-1"
+                      // id="user-menu-item-2"
+                      onClick={logout}
                     >
                       Sign Out
                     </button>
@@ -245,7 +240,7 @@ const Navbar = () => {
             >
               Properties
             </Link>
-            {isLoggedIn && (
+            {user && (
               <Link
                 href="/properties/add"
                 className={`text-white block rounded-md px-3 py-2 text-base font-medium ${
@@ -255,11 +250,14 @@ const Navbar = () => {
                 Add Property
               </Link>
             )}
-            {!isLoggedIn && (
-              <button className="flex items-center text-white bg-gray-700 hover:bg-gray-900 hover:text-white rounded-md px-3 py-2 my-5">
+            {!user && (
+              <Link
+                href="/login"
+                className="flex items-center text-white bg-gray-700 hover:bg-gray-900 hover:text-white rounded-md px-3 py-2 my-5"
+              >
                 <FaGoogle className="mr-2" />
                 <span>Login or Register</span>
-              </button>
+              </Link>
             )}
           </div>
         </div>
